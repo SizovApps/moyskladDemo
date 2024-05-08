@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.romashko.romashkoTestProject.models.Product;
 import com.romashko.romashkoTestProject.responses.ProductResponse;
 import com.romashko.romashkoTestProject.serializers.ProductDeserializer;
-import com.romashko.romashkoTestProject.services.ProductService;
+import com.romashko.romashkoTestProject.services.ProductsService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,13 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/products")
 public class ProductController {
 
-    private final ProductService productService;
+    private final ProductsService productsService;
 
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public ProductController(ProductService productService, ObjectMapper objectMapper) {
-        this.productService = productService;
+    public ProductController(ProductsService productsService, ObjectMapper objectMapper) {
+        this.productsService = productsService;
         this.objectMapper = objectMapper;
 
         SimpleModule module = new SimpleModule();
@@ -40,13 +40,13 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<ProductResponse> getAllProducts() {
-        List<Product> allProducts = productService.getAllProducts();
+        List<Product> allProducts = productsService.getAllProducts();
         return new ResponseEntity<>(new ProductResponse(200, allProducts, null), HttpStatus.OK);
     }
 
     @GetMapping("/{name}")
     public ResponseEntity<ProductResponse> findProductByName(@PathVariable String name) {
-        Product product = productService.findProductByName(name);
+        Product product = productsService.findProductByName(name);
         return new ResponseEntity<>(new ProductResponse(200, product, null), HttpStatus.OK);
     }
 
@@ -54,7 +54,7 @@ public class ProductController {
     public ResponseEntity<ProductResponse> createProduct(@RequestBody String productJson) {
         try {
             Product product = objectMapper.readValue(productJson, Product.class);
-            productService.createProduct(product);
+            productsService.createProduct(product);
             return new ResponseEntity<>(new ProductResponse(200, product, null), HttpStatus.OK);
         } catch (JsonProcessingException | IllegalArgumentException | NullPointerException exception) {
             return new ResponseEntity<>(new ProductResponse(500, null, exception.getMessage()), HttpStatus.BAD_REQUEST);
@@ -65,7 +65,7 @@ public class ProductController {
     public ResponseEntity<ProductResponse> updateProduct(@RequestBody String productJson) {
         try {
             Product product = objectMapper.readValue(productJson, Product.class);
-            Product updated_product = productService.updateProduct(product);
+            Product updated_product = productsService.updateProduct(product);
             return new ResponseEntity<>(new ProductResponse(200, updated_product, null), HttpStatus.OK);
         } catch (JsonProcessingException | IllegalArgumentException | NullPointerException exception) {
             return new ResponseEntity<>(new ProductResponse(500, null, exception.getMessage()), HttpStatus.BAD_REQUEST);
@@ -74,7 +74,7 @@ public class ProductController {
 
     @DeleteMapping("/{name}/delete")
     public ResponseEntity<ProductResponse> deleteProductByName(@PathVariable String name) {
-        productService.deleteProductByName(name);
+        productsService.deleteProductByName(name);
         return new ResponseEntity<>(new ProductResponse(200, null, null), HttpStatus.OK);
     }
 }
