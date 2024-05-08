@@ -36,7 +36,7 @@ class ProductControllerTest {
     @Test
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
     void testCreateProduct() throws Exception {
-        Product product = Product.createProduct("Name", "Desc", 10.0f, true);
+        Product product = new Product("Name", "Desc", 10.0f, true);
         String productJson = objectMapper.writeValueAsString(product);
         String response = mockMvc.perform(post("/api/v1/products")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -59,8 +59,8 @@ class ProductControllerTest {
     @Test
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
     void testGetProducts() throws Exception {
-        Product product1 = Product.createProduct("Name", "Desc", 10.0f, true);
-        Product product2 = Product.createProduct("Name2", "Desc2", 1f, false);
+        Product product1 = new Product("Name", "Desc", 10.0f, true);
+        Product product2 = new Product("Name2", "Desc2", 1f, false);
         String product1Json = objectMapper.writeValueAsString(product1);
         String product2Json = objectMapper.writeValueAsString(product2);
 
@@ -77,7 +77,7 @@ class ProductControllerTest {
     @Test
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
     void testFindProductByName() throws Exception {
-        Product product = Product.createProduct("Name", "Desc", 10.0f, true);
+        Product product = new Product("Name", "Desc", 10.0f, true);
         String productJson = objectMapper.writeValueAsString(product);
         mockMvc.perform(post("/api/v1/products")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -90,12 +90,12 @@ class ProductControllerTest {
     @Test
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
     void testUpdateProduct() throws Exception {
-        Product product = Product.createProduct("Name", "Desc", 10.0f, true);
+        Product product = new Product("Name", "Desc", 10.0f, true);
         String productJson = objectMapper.writeValueAsString(product);
         mockMvc.perform(post("/api/v1/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(productJson));
-        Product updatedProduct = Product.createProduct("Name", "Desc new", 1000f, false);
+        Product updatedProduct = new Product("Name", "Desc new", 1000f, false);
         String updatedProductJson = objectMapper.writeValueAsString(updatedProduct);
         String response = mockMvc.perform(put("/api/v1/products/update_product")
                         .contentType(MediaType.APPLICATION_JSON)
