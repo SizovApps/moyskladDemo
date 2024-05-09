@@ -3,7 +3,6 @@ package com.romashko.romashkoTestProject.services.Impl;
 
 import com.romashko.romashkoTestProject.models.Product;
 import com.romashko.romashkoTestProject.repositories.InMemoryProductDAO;
-import com.romashko.romashkoTestProject.repositories.ProductRepository;
 import com.romashko.romashkoTestProject.services.ProductsService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ public class InMemoryProductsServiceImpl implements ProductsService {
 
     @Override
     public Product findProductById(Long id) {
-        return null;
+        throw new UnsupportedOperationException("Method findProductById(Long id) is not implemented yet");
     }
 
     public Product createProduct(Product product) {
@@ -36,7 +35,8 @@ public class InMemoryProductsServiceImpl implements ProductsService {
         return productRepository.updateProduct(product);
     }
 
-    public void deleteProductByName(String name) {
-        productRepository.deleteProductByName(name);
+    @Override
+    public void deleteProductId(Long id) {
+        throw new UnsupportedOperationException("Method deleteProductId(Long id) is not implemented yet");
     }
 }

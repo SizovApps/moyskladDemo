@@ -4,6 +4,7 @@ import com.romashko.romashkoTestProject.models.Product;
 import com.romashko.romashkoTestProject.repositories.ProductRepository;
 import com.romashko.romashkoTestProject.services.ProductsService;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +25,13 @@ public class ProductsServiceImpl implements ProductsService {
 
     @Override
     public Product findProductByName(String name) {
-        return productRepository.findProductByName(name);
+        return productRepository.findProductByName(name).stream().findFirst().orElse(null);
     }
 
     @Override
     public Product findProductById(Long id) {
-        return productRepository.getReferenceById(id);
+        Optional<Product> product = productRepository.findById(id);
+        return product.orElse(null);
     }
 
     @Override
@@ -39,12 +41,15 @@ public class ProductsServiceImpl implements ProductsService {
 
     @Override
     public Product updateProduct(Product product) {
+        Product old_product = productRepository.findById(product.getId()).orElse(null);
+        if (old_product == null) {
+            throw new IllegalArgumentException("Product with such id not found!");
+        }
         return productRepository.save(product);
-
     }
 
     @Override
-    public void deleteProductByName(String name) {
-        productRepository.deleteProductByName(name);
+    public void deleteProductId(Long id) {
+        productRepository.deleteById(id);
     }
 }

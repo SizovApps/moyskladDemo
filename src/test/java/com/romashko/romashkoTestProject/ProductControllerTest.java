@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 class ProductControllerTest {
 
@@ -27,40 +28,36 @@ class ProductControllerTest {
 
 
     @Test
-    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
     void testGetEmptyProducts() throws Exception {
         String response = mockMvc.perform(get("/api/v1/products")).andReturn().getResponse().getContentAsString();
         assertEquals(response, "{\"status\":200,\"data\":[],\"detail\":null}");
     }
 
     @Test
-    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
     void testCreateProduct() throws Exception {
-        Product product = Product.createProduct("Name", "Desc", 10.0f, true);
+        Product product = new Product("Name", "Desc", 10.0f, true);
         String productJson = objectMapper.writeValueAsString(product);
         String response = mockMvc.perform(post("/api/v1/products")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(productJson))
                 .andReturn().getResponse().getContentAsString();
-        assertEquals(response, "{\"status\":200,\"data\":{\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":false},\"detail\":null}");
+        assertEquals("{\"status\":200,\"data\":{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":false},\"detail\":null}", response);
     }
 
     @Test
-    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
     void testCreateProductNoName() throws Exception {
         String productJson = "{\"description\": \"Desc\",\"price\": 2,\"isAvailable\": true}";
         String response = mockMvc.perform(post("/api/v1/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(productJson))
                 .andReturn().getResponse().getContentAsString();
-        assertEquals(response, "{\"status\":500,\"data\":null,\"detail\":\"Name can't be null\"}");
+        assertEquals("{\"status\":500,\"data\":null,\"detail\":\"Name can't be null\"}", response);
     }
 
     @Test
-    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
     void testGetProducts() throws Exception {
-        Product product1 = Product.createProduct("Name", "Desc", 10.0f, true);
-        Product product2 = Product.createProduct("Name2", "Desc2", 1f, false);
+        Product product1 = new Product("Name", "Desc", 10.0f, true);
+        Product product2 = new Product("Name2", "Desc2", 1f, false);
         String product1Json = objectMapper.writeValueAsString(product1);
         String product2Json = objectMapper.writeValueAsString(product2);
 
@@ -71,36 +68,46 @@ class ProductControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(product2Json));
         String response = mockMvc.perform(get("/api/v1/products")).andReturn().getResponse().getContentAsString();
-        assertEquals(response, "{\"status\":200,\"data\":[{\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":false},{\"name\":\"Name2\",\"description\":\"Desc2\",\"price\":1.0,\"available\":false}],\"detail\":null}");
+        assertEquals("{\"status\":200,\"data\":[{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":false},{\"id\":2,\"name\":\"Name2\",\"description\":\"Desc2\",\"price\":1.0,\"available\":false}],\"detail\":null}", response);
     }
 
     @Test
-    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-    void testFindProductByName() throws Exception {
-        Product product = Product.createProduct("Name", "Desc", 10.0f, true);
+    void testFindProductById() throws Exception {
+        Product product = new Product("Name", "Desc", 10.0f, true);
         String productJson = objectMapper.writeValueAsString(product);
         mockMvc.perform(post("/api/v1/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(productJson))
                 .andReturn().getResponse().getContentAsString();
-        String response = mockMvc.perform(get("/api/v1/products/Name")).andReturn().getResponse().getContentAsString();
-        assertEquals(response, "{\"status\":200,\"data\":{\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":false},\"detail\":null}");
+        String response = mockMvc.perform(get("/api/v1/products/1")).andReturn().getResponse().getContentAsString();
+        assertEquals("{\"status\":200,\"data\":{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":false},\"detail\":null}", response);
     }
 
     @Test
-    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    void testFindProductByName() throws Exception {
+        Product product = new Product("Name", "Desc", 10.0f, true);
+        String productJson = objectMapper.writeValueAsString(product);
+        mockMvc.perform(post("/api/v1/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(productJson))
+                .andReturn().getResponse().getContentAsString();
+        String response = mockMvc.perform(get("/api/v1/products/?name=Name")).andReturn().getResponse().getContentAsString();
+        assertEquals("{\"status\":200,\"data\":{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":false},\"detail\":null}", response);
+    }
+
+    @Test
     void testUpdateProduct() throws Exception {
-        Product product = Product.createProduct("Name", "Desc", 10.0f, true);
+        Product product = new Product("Name", "Desc", 10.0f, true);
         String productJson = objectMapper.writeValueAsString(product);
         mockMvc.perform(post("/api/v1/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(productJson));
-        Product updatedProduct = Product.createProduct("Name", "Desc new", 1000f, false);
+        Product updatedProduct = new Product(1L,"Name", "Desc new", 1000f, false);
         String updatedProductJson = objectMapper.writeValueAsString(updatedProduct);
         String response = mockMvc.perform(put("/api/v1/products/update_product")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedProductJson))
                 .andReturn().getResponse().getContentAsString();
-        assertEquals(response, "{\"status\":200,\"data\":{\"name\":\"Name\",\"description\":\"Desc new\",\"price\":1000.0,\"available\":false},\"detail\":null}");
+        assertEquals("{\"status\":200,\"data\":{\"id\":1,\"name\":\"Name\",\"description\":\"Desc new\",\"price\":1000.0,\"available\":false},\"detail\":null}", response);
     }
 }

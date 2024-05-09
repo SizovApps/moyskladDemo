@@ -1,19 +1,23 @@
 package com.romashko.romashkoTestProject.models;
 
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
-import lombok.Builder;
+
+import javax.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 @Data
-@Builder
 @Entity
 @Table(name = "products")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Product {
     public static final int NAME_MAX_LENGTH = 255;
     public static final int DESCRIPTION_MAX_LENGTH = 4096;
@@ -21,30 +25,23 @@ public class Product {
     @Id
     @GeneratedValue
     private Long id;
-    @NonNull
+
+    @Column(nullable = false)
     private String name;
-    @Builder.Default
-    private String description = "";
-    @Builder.Default
-    private Float price = 0f;
-    @Builder.Default
-    private boolean isAvailable = true;
 
-    public static Product createProduct(String name, String description, Float price, boolean isAvailable) {
-        return Product.builder()
-                .name(name)
-                .description(description)
-                .price(price)
-                .isAvailable(isAvailable)
-                .build();
+    @Lob
+    @Column(length = DESCRIPTION_MAX_LENGTH)
+    private String description;
+
+    @PositiveOrZero(message = "Price must be greater than or equal to 0")
+    private Float price;
+    private boolean isAvailable;
+
+
+    public Product(String name, String description, float price, boolean isAvailable) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.isAvailable = isAvailable;
     }
-
-    public Product() {
-        this.id = 0L;
-        this.name = "";
-        this.description = "";
-        this.price = 0f;
-        this.isAvailable = true;
-    }
-
 }

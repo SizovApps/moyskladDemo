@@ -42,11 +42,10 @@ public class ProductDeserializer extends StdDeserializer<Product> {
 
         boolean isAvailable = node.has("isAvailable") && node.get("isAvailable").booleanValue();
 
-        return Product.builder()
-                .name(name)
-                .description(description)
-                .price(price)
-                .isAvailable(isAvailable)
-                .build();
+        if (node.has("id")) {
+            return new Product(node.get("id").longValue(), name, description, price, isAvailable);
+        } else {
+            return new Product(name, description, price, isAvailable);
+        }
     }
 }

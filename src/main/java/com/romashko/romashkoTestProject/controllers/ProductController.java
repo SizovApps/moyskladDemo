@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -44,9 +45,15 @@ public class ProductController {
         return new ResponseEntity<>(new ProductResponse(200, allProducts, null), HttpStatus.OK);
     }
 
-    @GetMapping("/{name}")
-    public ResponseEntity<ProductResponse> findProductByName(@PathVariable String name) {
+    @GetMapping("/")
+    public ResponseEntity<ProductResponse> findProductByName(@RequestParam(value = "name") String name) {
         Product product = productsService.findProductByName(name);
+        return new ResponseEntity<>(new ProductResponse(200, product, null), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponse> findProductById(@PathVariable Long id) {
+        Product product = productsService.findProductById(id);
         return new ResponseEntity<>(new ProductResponse(200, product, null), HttpStatus.OK);
     }
 
@@ -54,8 +61,8 @@ public class ProductController {
     public ResponseEntity<ProductResponse> createProduct(@RequestBody String productJson) {
         try {
             Product product = objectMapper.readValue(productJson, Product.class);
-            productsService.createProduct(product);
-            return new ResponseEntity<>(new ProductResponse(200, product, null), HttpStatus.OK);
+            Product new_product = productsService.createProduct(product);
+            return new ResponseEntity<>(new ProductResponse(200, new_product, null), HttpStatus.OK);
         } catch (JsonProcessingException | IllegalArgumentException | NullPointerException exception) {
             return new ResponseEntity<>(new ProductResponse(500, null, exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
@@ -72,9 +79,10 @@ public class ProductController {
         }
     }
 
-    @DeleteMapping("/{name}/delete")
-    public ResponseEntity<ProductResponse> deleteProductByName(@PathVariable String name) {
-        productsService.deleteProductByName(name);
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<ProductResponse> deleteProductById(@PathVariable Long id) {
+        productsService.deleteProductId(id);
         return new ResponseEntity<>(new ProductResponse(200, null, null), HttpStatus.OK);
     }
+
 }
