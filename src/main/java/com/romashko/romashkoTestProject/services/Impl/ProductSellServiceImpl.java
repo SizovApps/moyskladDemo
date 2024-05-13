@@ -2,9 +2,7 @@ package com.romashko.romashkoTestProject.services.Impl;
 
 import com.romashko.romashkoTestProject.models.Product;
 import com.romashko.romashkoTestProject.models.ProductSell;
-import com.romashko.romashkoTestProject.models.ProductSupply;
 import com.romashko.romashkoTestProject.repositories.ProductSellRepository;
-import com.romashko.romashkoTestProject.repositories.ProductSupplyRepository;
 import com.romashko.romashkoTestProject.services.ProductSellService;
 import com.romashko.romashkoTestProject.services.ProductsService;
 import java.util.List;

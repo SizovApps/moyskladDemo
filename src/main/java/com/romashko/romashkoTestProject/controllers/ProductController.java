@@ -8,7 +8,6 @@ import com.romashko.romashkoTestProject.models.Product;
 import com.romashko.romashkoTestProject.responses.ProductsServiceResponse;
 import com.romashko.romashkoTestProject.serializers.ProductDeserializer;
 import com.romashko.romashkoTestProject.services.ProductsService;
-import com.romashko.romashkoTestProject.services.utils.DeserializationMetadata;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
