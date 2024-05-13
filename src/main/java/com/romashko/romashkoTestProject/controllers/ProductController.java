@@ -1,12 +1,14 @@
 package com.romashko.romashkoTestProject.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.romashko.romashkoTestProject.models.Product;
-import com.romashko.romashkoTestProject.responses.ProductResponse;
+import com.romashko.romashkoTestProject.responses.ProductsServiceResponse;
 import com.romashko.romashkoTestProject.serializers.ProductDeserializer;
 import com.romashko.romashkoTestProject.services.ProductsService;
+import com.romashko.romashkoTestProject.services.utils.DeserializationMetadata;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,60 +38,62 @@ public class ProductController {
         this.objectMapper = objectMapper;
 
         SimpleModule module = new SimpleModule();
-        module.addDeserializer(Product.class, new ProductDeserializer());
+        module.addDeserializer(Product.class, new ProductDeserializer(productsService));
         this.objectMapper.registerModule(module);
     }
 
     @GetMapping
-    public ResponseEntity<ProductResponse> getAllProducts() {
+    public ResponseEntity<ProductsServiceResponse> getAllProducts() {
         List<Product> allProducts = productsService.getAllProducts();
-        return new ResponseEntity<>(new ProductResponse(200, allProducts, null), HttpStatus.OK);
+        return new ResponseEntity<>(new ProductsServiceResponse(200, allProducts, null), HttpStatus.OK);
     }
 
     @GetMapping("/")
-    public ResponseEntity<ProductResponse> filterProducts(@RequestParam Map<String, String> parameters) {
+    public ResponseEntity<ProductsServiceResponse> filterProducts(@RequestParam Map<String, String> parameters) {
         try {
             List<Product> product = productsService.filterProducts(parameters);
-            return new ResponseEntity<>(new ProductResponse(200, product, null), HttpStatus.OK);
+            return new ResponseEntity<>(new ProductsServiceResponse(200, product, null), HttpStatus.OK);
 
         } catch (IllegalArgumentException exception) {
-            return new ResponseEntity<>(new ProductResponse(500, null, exception.getMessage()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ProductsServiceResponse(500, null, exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> findProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductsServiceResponse> findProductById(@PathVariable Long id) {
         Product product = productsService.findProductById(id);
-        return new ResponseEntity<>(new ProductResponse(200, product, null), HttpStatus.OK);
+        return new ResponseEntity<>(new ProductsServiceResponse(200, product, null), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponse> createProduct(@RequestBody String productJson) {
+    public ResponseEntity<ProductsServiceResponse> createProduct(@RequestBody String productJson) {
         try {
             Product product = objectMapper.readValue(productJson, Product.class);
             Product new_product = productsService.createProduct(product);
-            return new ResponseEntity<>(new ProductResponse(200, new_product, null), HttpStatus.OK);
+            return new ResponseEntity<>(new ProductsServiceResponse(200, new_product, null), HttpStatus.OK);
         } catch (JsonProcessingException | IllegalArgumentException | NullPointerException exception) {
-            return new ResponseEntity<>(new ProductResponse(500, null, exception.getMessage()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ProductsServiceResponse(500, null, exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping("/update_product")
-    public ResponseEntity<ProductResponse> updateProduct(@RequestBody String productJson) {
+    public ResponseEntity<ProductsServiceResponse> updateProduct(@RequestBody String productJson) {
         try {
+            objectMapper.setInjectableValues(new InjectableValues.Std().addValue("isUpdate", true));
             Product product = objectMapper.readValue(productJson, Product.class);
+            objectMapper.setInjectableValues(null);
             Product updated_product = productsService.updateProduct(product);
-            return new ResponseEntity<>(new ProductResponse(200, updated_product, null), HttpStatus.OK);
+            return new ResponseEntity<>(new ProductsServiceResponse(200, updated_product, null), HttpStatus.OK);
         } catch (JsonProcessingException | IllegalArgumentException | NullPointerException exception) {
-            return new ResponseEntity<>(new ProductResponse(500, null, exception.getMessage()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ProductsServiceResponse(500, null, exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
     @DeleteMapping("/{id}/delete")
-    public ResponseEntity<ProductResponse> deleteProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductsServiceResponse> deleteProductById(@PathVariable Long id) {
         productsService.deleteProductId(id);
-        return new ResponseEntity<>(new ProductResponse(200, null, null), HttpStatus.OK);
+        return new ResponseEntity<>(new ProductsServiceResponse(200, null, null), HttpStatus.OK);
     }
 
 }
