@@ -6,7 +6,7 @@
 
 ## Деплой через докер
 
-1. Setup .env file. Example in cryptoTracker/.env.example
+1. Запуск через докер доступен начиная с версии t3. Выполните команду
 
     ```bash
     docker-compose up -d --build
@@ -14,10 +14,81 @@
 ## Описание решения:
 
 # Общее описание
-Выполнены все бонусные задания. Написаны тесты. 
+Выполнены все бонусные задания. Написаны тесты. Примеры запросов будут.
 
 # Технологии:
 Java 17, Spring Boot, Spring MVC, Lombok, Jackson, JPA + Hibernate + PostgreSQL, Docker.
+
+# Примеры запросов (для версии t5):
+
+Создание товара:
+<br>
+POST: http://127.0.0.1:8080/api/v1/products
+<br>
+Body:
+`{
+"name": "B",
+"description": "Desc",
+"price": 10.0,
+"available": true,
+"amountOfProduct": 5
+}`
+
+<br>
+Получение всех товаров:
+<br>
+GET: http://127.0.0.1:8080/api/v1/products
+<br>
+
+Получение по id:
+<br>
+GET: http://127.0.0.1:8080/api/v1/products/1
+
+
+Примеры фильтров:
+<br>
+GET: http://127.0.0.1:8080/api/v1/products/?available=true&priceGreater=7&sortPrice=DESC
+
+<br>
+Обновление товара:
+<br>
+PUT: http://127.0.0.1:8080/api/v1/products/update_product
+<br>
+Body: 
+
+`{
+"id": 952,
+"name": "Finn3",
+"description": "updated!!! again1",
+"price": 111,
+"isAvailable": false,
+"amountOfProduct": 10
+}`
+
+<br>
+Получение всех продаж:
+<br>
+GET: http://127.0.0.1:8080/api/v1/product_sell
+<br>
+
+<br>
+Создание продаже:
+<br>
+PUT: http://127.0.0.1:8080/api/v1/product_sell
+<br>
+Body: 
+
+`{
+"name": "first product sell",
+"product": {
+"id": 1002
+},
+"productAmount": 2
+}`
+
+Аналогично для Поставки товаров.
+
+
 
 # t1
 
