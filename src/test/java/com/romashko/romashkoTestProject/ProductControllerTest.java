@@ -41,12 +41,12 @@ class ProductControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(productJson))
                 .andReturn().getResponse().getContentAsString();
-        assertEquals("{\"status\":200,\"data\":{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":false},\"detail\":null}", response);
+        assertEquals("{\"status\":200,\"data\":{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":true},\"detail\":null}", response);
     }
 
     @Test
     void testCreateProductNoName() throws Exception {
-        String productJson = "{\"description\": \"Desc\",\"price\": 2,\"isAvailable\": true}";
+        String productJson = "{\"description\": \"Desc\",\"price\": 2,\"available\": true}";
         String response = mockMvc.perform(post("/api/v1/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(productJson))
@@ -68,7 +68,7 @@ class ProductControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(product2Json));
         String response = mockMvc.perform(get("/api/v1/products")).andReturn().getResponse().getContentAsString();
-        assertEquals("{\"status\":200,\"data\":[{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":false},{\"id\":2,\"name\":\"Name2\",\"description\":\"Desc2\",\"price\":1.0,\"available\":false}],\"detail\":null}", response);
+        assertEquals("{\"status\":200,\"data\":[{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":true},{\"id\":2,\"name\":\"Name2\",\"description\":\"Desc2\",\"price\":1.0,\"available\":false}],\"detail\":null}", response);
     }
 
     @Test
@@ -80,7 +80,7 @@ class ProductControllerTest {
                         .content(productJson))
                 .andReturn().getResponse().getContentAsString();
         String response = mockMvc.perform(get("/api/v1/products/1")).andReturn().getResponse().getContentAsString();
-        assertEquals("{\"status\":200,\"data\":{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":false},\"detail\":null}", response);
+        assertEquals("{\"status\":200,\"data\":{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":true},\"detail\":null}", response);
     }
 
     @Test
@@ -92,7 +92,7 @@ class ProductControllerTest {
                         .content(productJson))
                 .andReturn().getResponse().getContentAsString();
         String response = mockMvc.perform(get("/api/v1/products/?name=Name")).andReturn().getResponse().getContentAsString();
-        assertEquals("{\"status\":200,\"data\":{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":false},\"detail\":null}", response);
+        assertEquals("{\"status\":200,\"data\":{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":true},\"detail\":null}", response);
     }
 
     @Test
