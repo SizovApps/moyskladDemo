@@ -35,13 +35,13 @@ public class Product {
 
     @PositiveOrZero(message = "Price must be greater than or equal to 0")
     private Float price;
-    private boolean isAvailable;
+    private boolean available;
 
 
-    public Product(String name, String description, float price, boolean isAvailable) {
+    public Product(String name, String description, float price, boolean available) {
         this.name = name;
         this.description = description;
         this.price = price;
-        this.isAvailable = isAvailable;
+        this.available = available;
     }
 }
