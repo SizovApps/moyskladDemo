@@ -8,6 +8,7 @@ import com.romashko.romashkoTestProject.responses.ProductResponse;
 import com.romashko.romashkoTestProject.serializers.ProductDeserializer;
 import com.romashko.romashkoTestProject.services.ProductsService;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,10 +47,16 @@ public class ProductController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<ProductResponse> findProductByName(@RequestParam(value = "name") String name) {
-        Product product = productsService.findProductByName(name);
-        return new ResponseEntity<>(new ProductResponse(200, product, null), HttpStatus.OK);
+    public ResponseEntity<ProductResponse> filterProducts(@RequestParam Map<String, String> parameters) {
+        try {
+            List<Product> product = productsService.filterProducts(parameters);
+            return new ResponseEntity<>(new ProductResponse(200, product, null), HttpStatus.OK);
+
+        } catch (IllegalArgumentException exception) {
+            return new ResponseEntity<>(new ProductResponse(500, null, exception.getMessage()), HttpStatus.BAD_REQUEST);
+        }
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> findProductById(@PathVariable Long id) {

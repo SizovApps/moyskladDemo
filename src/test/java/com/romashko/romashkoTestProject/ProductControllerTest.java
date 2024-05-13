@@ -41,12 +41,12 @@ class ProductControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(productJson))
                 .andReturn().getResponse().getContentAsString();
-        assertEquals("{\"status\":200,\"data\":{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":false},\"detail\":null}", response);
+        assertEquals("{\"status\":200,\"data\":{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":true},\"detail\":null}", response);
     }
 
     @Test
     void testCreateProductNoName() throws Exception {
-        String productJson = "{\"description\": \"Desc\",\"price\": 2,\"isAvailable\": true}";
+        String productJson = "{\"description\": \"Desc\",\"price\": 2,\"available\": true}";
         String response = mockMvc.perform(post("/api/v1/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(productJson))
@@ -68,7 +68,7 @@ class ProductControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(product2Json));
         String response = mockMvc.perform(get("/api/v1/products")).andReturn().getResponse().getContentAsString();
-        assertEquals("{\"status\":200,\"data\":[{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":false},{\"id\":2,\"name\":\"Name2\",\"description\":\"Desc2\",\"price\":1.0,\"available\":false}],\"detail\":null}", response);
+        assertEquals("{\"status\":200,\"data\":[{\"id\":2,\"name\":\"Name2\",\"description\":\"Desc2\",\"price\":1.0,\"available\":false},{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":true}],\"detail\":null}", response);
     }
 
     @Test
@@ -80,7 +80,7 @@ class ProductControllerTest {
                         .content(productJson))
                 .andReturn().getResponse().getContentAsString();
         String response = mockMvc.perform(get("/api/v1/products/1")).andReturn().getResponse().getContentAsString();
-        assertEquals("{\"status\":200,\"data\":{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":false},\"detail\":null}", response);
+        assertEquals("{\"status\":200,\"data\":{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":true},\"detail\":null}", response);
     }
 
     @Test
@@ -92,7 +92,7 @@ class ProductControllerTest {
                         .content(productJson))
                 .andReturn().getResponse().getContentAsString();
         String response = mockMvc.perform(get("/api/v1/products/?name=Name")).andReturn().getResponse().getContentAsString();
-        assertEquals("{\"status\":200,\"data\":{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":false},\"detail\":null}", response);
+        assertEquals("{\"status\":200,\"data\":[{\"id\":1,\"name\":\"Name\",\"description\":\"Desc\",\"price\":10.0,\"available\":true}],\"detail\":null}", response);
     }
 
     @Test
@@ -109,5 +109,89 @@ class ProductControllerTest {
                         .content(updatedProductJson))
                 .andReturn().getResponse().getContentAsString();
         assertEquals("{\"status\":200,\"data\":{\"id\":1,\"name\":\"Name\",\"description\":\"Desc new\",\"price\":1000.0,\"available\":false},\"detail\":null}", response);
+    }
+
+    @Test
+    void testSortProductASC() throws Exception {
+        Product product1 = new Product("A", "Desc", 10.0f, true);
+        String productJson1 = objectMapper.writeValueAsString(product1);
+        mockMvc.perform(post("/api/v1/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(productJson1))
+                .andReturn().getResponse().getContentAsString();
+        Product product2 = new Product("Q", "Desc", 10.0f, true);
+        String productJson2 = objectMapper.writeValueAsString(product2);
+        mockMvc.perform(post("/api/v1/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(productJson2))
+                .andReturn().getResponse().getContentAsString();
+        String response = mockMvc.perform(get("/api/v1/products/?sortName=ASC")).andReturn().getResponse().getContentAsString();
+        assertEquals("{\"status\":200,\"data\":[{\"id\":1,\"name\":\"A\",\"description\":\"Desc\",\"price\":10.0,\"available\":true},{\"id\":2,\"name\":\"Q\",\"description\":\"Desc\",\"price\":10.0,\"available\":true}],\"detail\":null}", response);
+    }
+
+    @Test
+    void testSortProductDESC() throws Exception {
+        Product product1 = new Product("A", "Desc", 10.0f, true);
+        String productJson1 = objectMapper.writeValueAsString(product1);
+        mockMvc.perform(post("/api/v1/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(productJson1))
+                .andReturn().getResponse().getContentAsString();
+        Product product2 = new Product("Q", "Desc", 10.0f, true);
+        String productJson2 = objectMapper.writeValueAsString(product2);
+        mockMvc.perform(post("/api/v1/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(productJson2))
+                .andReturn().getResponse().getContentAsString();
+        String response = mockMvc.perform(get("/api/v1/products/?sortName=DESC")).andReturn().getResponse().getContentAsString();
+        assertEquals("{\"status\":200,\"data\":[{\"id\":2,\"name\":\"Q\",\"description\":\"Desc\",\"price\":10.0,\"available\":true},{\"id\":1,\"name\":\"A\",\"description\":\"Desc\",\"price\":10.0,\"available\":true}],\"detail\":null}", response);
+    }
+
+    @Test
+    void testFilterProductPriceGreater() throws Exception {
+        Product product1 = new Product("A", "Desc", 1.0f, true);
+        String productJson1 = objectMapper.writeValueAsString(product1);
+        mockMvc.perform(post("/api/v1/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(productJson1))
+                .andReturn().getResponse().getContentAsString();
+        Product product2 = new Product("Q", "Desc", 10.0f, true);
+        String productJson2 = objectMapper.writeValueAsString(product2);
+        mockMvc.perform(post("/api/v1/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(productJson2))
+                .andReturn().getResponse().getContentAsString();
+        String response = mockMvc.perform(get("/api/v1/products/?priceGreater=5")).andReturn().getResponse().getContentAsString();
+        assertEquals("{\"status\":200,\"data\":[{\"id\":2,\"name\":\"Q\",\"description\":\"Desc\",\"price\":10.0,\"available\":true}],\"detail\":null}", response);
+    }
+
+    @Test
+    void testFilterProductIsAvailable() throws Exception {
+        Product product1 = new Product("A", "Desc", 1.0f, true);
+        String productJson1 = objectMapper.writeValueAsString(product1);
+        mockMvc.perform(post("/api/v1/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(productJson1))
+                .andReturn().getResponse().getContentAsString();
+        Product product2 = new Product("Q", "Desc", 10.0f, false);
+        String productJson2 = objectMapper.writeValueAsString(product2);
+        mockMvc.perform(post("/api/v1/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(productJson2))
+                .andReturn().getResponse().getContentAsString();
+        String response = mockMvc.perform(get("/api/v1/products/?available=true")).andReturn().getResponse().getContentAsString();
+        assertEquals("{\"status\":200,\"data\":[{\"id\":1,\"name\":\"A\",\"description\":\"Desc\",\"price\":1.0,\"available\":true}],\"detail\":null}", response);
+    }
+
+    @Test
+    void testFilterProductFakeParameter() throws Exception {
+        Product product = new Product("A", "Desc", 1.0f, true);
+        String productJson = objectMapper.writeValueAsString(product);
+        mockMvc.perform(post("/api/v1/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(productJson))
+                .andReturn().getResponse().getContentAsString();
+        String response = mockMvc.perform(get("/api/v1/products/?fake=true")).andReturn().getResponse().getContentAsString();
+        assertEquals("{\"status\":500,\"data\":null,\"detail\":\"Can't find filter parameter with name 'fake'.\"}", response);
     }
 }

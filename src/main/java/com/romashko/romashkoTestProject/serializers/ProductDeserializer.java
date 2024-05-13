@@ -40,12 +40,12 @@ public class ProductDeserializer extends StdDeserializer<Product> {
             throw new IllegalArgumentException("Product price can't be less than 0");
         }
 
-        boolean isAvailable = node.has("isAvailable") && node.get("isAvailable").booleanValue();
+        boolean available = node.has("available") && node.get("available").booleanValue();
 
         if (node.has("id")) {
-            return new Product(node.get("id").longValue(), name, description, price, isAvailable);
+            return new Product(node.get("id").longValue(), name, description, price, available);
         } else {
-            return new Product(name, description, price, isAvailable);
+            return new Product(name, description, price, available);
         }
     }
 }

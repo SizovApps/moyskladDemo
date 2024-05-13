@@ -5,6 +5,7 @@ import com.romashko.romashkoTestProject.models.Product;
 import com.romashko.romashkoTestProject.repositories.InMemoryProductDAO;
 import com.romashko.romashkoTestProject.services.ProductsService;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,12 @@ public class InMemoryProductsServiceImpl implements ProductsService {
 
     public Product findProductByName(String name) {
         return productRepository.findProductByName(name);
+    }
+
+
+    @Override
+    public List<Product> filterProducts(Map<String, String> parameters) {
+        throw new UnsupportedOperationException("Method filterProductsByName(String name) is not implemented yet");
     }
 
     @Override
