@@ -11,5 +11,4 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     List<Product> findProductByName(String name);
 
-    void deleteProductByName(String name);
 }

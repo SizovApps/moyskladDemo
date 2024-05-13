@@ -10,7 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 public class ProductSpecification {
 
     public static Specification<Product> columnEqual(String columnName, Object columnValue) {
-        return new Specification<Product>() {
+        return new Specification<>() {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -22,7 +22,7 @@ public class ProductSpecification {
 
 
     public static Specification<Product> columnContains(String columnName, Object columnValue) {
-        return new Specification<Product>() {
+        return new Specification<>() {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -33,7 +33,7 @@ public class ProductSpecification {
     }
 
     public static Specification<Product> columnGreaterThan(String columnName, Float columnValue) {
-        return new Specification<Product>() {
+        return new Specification<>() {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -44,7 +44,7 @@ public class ProductSpecification {
     }
 
     public static Specification<Product> columnLowerThan(String columnName, Float columnValue) {
-        return new Specification<Product>() {
+        return new Specification<>() {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -55,7 +55,7 @@ public class ProductSpecification {
     }
 
     public static Specification<Product> isAvailable(String columnName, Boolean columnValue) {
-        return new Specification<Product>() {
+        return new Specification<>() {
             private static final long serialVersionUID = 1L;
 
             @Override
