@@ -31,6 +31,7 @@ public class ProductsServiceImpl implements ProductsService {
         return productRepository.findAll(sortByName);
     }
 
+
     @Override
     public Product findProductByName(String name) {
         return productRepository.findProductByName(name).stream().findFirst().orElse(null);

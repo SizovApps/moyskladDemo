@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.romashko.romashkoTestProject.kafka.KafkaProducer;
 import com.romashko.romashkoTestProject.models.Product;
 import com.romashko.romashkoTestProject.responses.ProductsServiceResponse;
 import com.romashko.romashkoTestProject.serializers.ProductDeserializer;
@@ -29,16 +30,25 @@ public class ProductController {
 
     private final ProductsService productsService;
 
+    private final KafkaProducer kafkaProducer;
+
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public ProductController(ProductsService productsService, ObjectMapper objectMapper) {
+    public ProductController(ProductsService productsService, ObjectMapper objectMapper, KafkaProducer kafkaProducer) {
         this.productsService = productsService;
         this.objectMapper = objectMapper;
+        this.kafkaProducer = kafkaProducer;
 
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Product.class, new ProductDeserializer(productsService));
         this.objectMapper.registerModule(module);
+    }
+
+    @PostMapping("kafka/send")
+    public String send(@RequestBody String message) {
+        kafkaProducer.sendMessage(message);
+        return "Success!";
     }
 
     @GetMapping
